@@ -8,18 +8,25 @@ import (
 )
 
 func main() {
-	http.HandleFunc("/off-net", offNet)
+	http.HandleFunc("/off-net", disableNetAdpt)
 
 	err := http.ListenAndServe(":5222", nil)
 	checkError(err)
+	//showNet()
 }
 
-func offNet(w http.ResponseWriter, r *http.Request) {
+func disableNetAdpt(w http.ResponseWriter, r *http.Request) {
 	_, err := exec.Command("netsh", "interface", "set", "interface", "以太网", "disabled").Output()
 	checkError(err)
 	time.Sleep(6 * time.Second)
 	_, err = exec.Command("netsh", "interface", "set", "interface", "以太网", "enabled").Output()
 	checkError(err)
+}
+
+func getNetAdpt()  {
+	out, err := exec.Command("netsh", "interface", "show", "interface").Output()
+	checkError(err)
+	fmt.Println(string(out))
 }
 
 func checkError(e error) {
