@@ -1,25 +1,36 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os/exec"
+	"strconv"
 	"time"
 )
 
 func main() {
+
 	http.HandleFunc("/off-net", disableNetAdpt)
 
 	err := http.ListenAndServe(":5222", nil)
 	checkError(err)
-	//showNet()
 }
 
 func disableNetAdpt(w http.ResponseWriter, r *http.Request) {
-	_, err := exec.Command("netsh", "interface", "set", "interface", "以太网", "disabled").Output()
+	decoder := json.NewDecoder(r.Body)
+	var params map[string]string
+	decoder.Decode(&params)
+	interval, err := strconv.Atoi(params["interval"])
 	checkError(err)
-	time.Sleep(6 * time.Second)
-	_, err = exec.Command("netsh", "interface", "set", "interface", "以太网", "enabled").Output()
+	switchNetAdpt(interval, params["adptName"])
+}
+
+func switchNetAdpt(interval int, adptName string) {
+	err :=exec.Command("netsh", "interface", "set", "interface", adptName, "disabled").Run()
+	checkError(err)
+	time.Sleep(time.Duration(interval) * time.Second)
+	err = exec.Command("netsh", "interface", "set", "interface", adptName, "enabled").Run()
 	checkError(err)
 }
 
