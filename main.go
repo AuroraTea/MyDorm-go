@@ -36,11 +36,19 @@ func postTest(w http.ResponseWriter, r *http.Request) {
 }
 
 func disableNetAdpt(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Add("Access-Control-Allow-Headers", "Access-Token, Content-Type")
+	w.Header().Set("content-type", "application/json")
+	if r.Method != "POST" {
+		return
+	}
+
 	decoder := json.NewDecoder(r.Body)
 	var params map[string]string
 	decoder.Decode(&params)
 	interval, err := strconv.Atoi(params["interval"])
 	checkError(err)
+	
 	switchNetAdpt(interval, params["adptName"])
 }
 
