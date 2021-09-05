@@ -18,12 +18,9 @@ func main() {
 }
 
 func postTest(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Add("Access-Control-Allow-Headers", "Access-Token, Content-Type")
-	w.Header().Set("content-type", "application/json")
-	if r.Method != "POST" {
-		return
-	}
+	httpCORS(w, "*")
+	httpMethod(r, "POST")
+
 	decoder := json.NewDecoder(r.Body)
 	var params map[string]string
 	decoder.Decode(&params)
@@ -36,19 +33,15 @@ func postTest(w http.ResponseWriter, r *http.Request) {
 }
 
 func disableNetAdpt(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Add("Access-Control-Allow-Headers", "Access-Token, Content-Type")
-	w.Header().Set("content-type", "application/json")
-	if r.Method != "POST" {
-		return
-	}
+	httpCORS(w, "*")
+	httpMethod(r, "POST")
 
 	decoder := json.NewDecoder(r.Body)
 	var params map[string]string
 	decoder.Decode(&params)
 	interval, err := strconv.Atoi(params["interval"])
 	checkError(err)
-	
+
 	switchNetAdpt(interval, params["adptName"])
 }
 
@@ -65,6 +58,19 @@ func getNetAdpt()  {
 	checkError(err)
 	fmt.Println(string(out))
 }
+
+func httpCORS(w http.ResponseWriter, url string) {
+	w.Header().Set("Access-Control-Allow-Origin", url)
+	w.Header().Add("Access-Control-Allow-Headers", "Access-Token, Content-Type")
+	w.Header().Set("content-type", "application/json")
+}
+
+func httpMethod(r *http.Request, method string)  {
+	if r.Method != method {
+		return
+	}
+}
+
 
 func checkError(e error) {
 	if e != nil {
