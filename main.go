@@ -19,30 +19,29 @@ func main() {
 
 func postTest(w http.ResponseWriter, r *http.Request) {
 	httpCORS(w, "*")
-	httpMethod(r, "POST")
+	if r.Method == "POST" {
+		decoder := json.NewDecoder(r.Body)
+		var params map[string]string
+		decoder.Decode(&params)
 
-	decoder := json.NewDecoder(r.Body)
-	var params map[string]string
-	decoder.Decode(&params)
-
-	fmt.Println(params["adptName"])
-	fmt.Println(params["interval"])
-	interval, err := strconv.Atoi(params["interval"])
-	checkError(err)
-	fmt.Println(interval)
+		interval, err := strconv.Atoi(params["interval"])
+		checkError(err)
+		fmt.Println(params["adptName"])
+		fmt.Println(interval)
+	}
 }
 
 func disableNetAdpt(w http.ResponseWriter, r *http.Request) {
 	httpCORS(w, "*")
-	httpMethod(r, "POST")
+	if r.Method == "POST" {
+		decoder := json.NewDecoder(r.Body)
+		var params map[string]string
+		decoder.Decode(&params)
+		interval, err := strconv.Atoi(params["interval"])
+		checkError(err)
 
-	decoder := json.NewDecoder(r.Body)
-	var params map[string]string
-	decoder.Decode(&params)
-	interval, err := strconv.Atoi(params["interval"])
-	checkError(err)
-
-	switchNetAdpt(interval, params["adptName"])
+		switchNetAdpt(interval, params["adptName"])
+	}
 }
 
 func switchNetAdpt(interval int, adptName string) {
