@@ -7,16 +7,21 @@
   <title>Document</title>
 </head>
 <body>
+  <input type="text" id="adptName" placeholder="网卡名称">
+  <input type="text" id="interval" placeholder="禁用时长">秒
   <button>啦啦啦</button>
 
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
   const btn = document.querySelectorAll('button');
+  const input = document.querySelectorAll('input');
   btn[0].onclick = function(){
+    const adptName = input[0].value;
+    const interval = input[1].value;
     // axios.get('http://100.83.138.239:5222/off-net', {
       axios.post('http://127.0.0.1:5222/test', {
-        interval: '6',
-        adptName: '以太网'
+        adptName: adptName,
+        interval: interval
     })
     .then(function (response) {
       console.log(response);
