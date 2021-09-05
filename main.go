@@ -18,6 +18,9 @@ func main() {
 }
 
 func postTest(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Add("Access-Control-Allow-Headers", "Access-Token, Content-Type")
+	w.Header().Set("content-type", "application/json")
 	decoder := json.NewDecoder(r.Body)
 	var params map[string]string
 	decoder.Decode(&params)
