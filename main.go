@@ -81,6 +81,7 @@ func checkIP()  {
 	}
 }
 
+//获取本地ip
 func getLocalIPv4s() ([]string, error) {
 	var ips []string
 	addrs, err := net.InterfaceAddrs()
@@ -105,25 +106,28 @@ func switchNetAdpt(interval int, adptName string) {
 	checkError(err)
 }
 
+//获取网卡名称和本地ip
 func getNetAdpt()  {
 	out, err := exec.Command("netsh", "interface", "show", "interface").Output()
 	checkError(err)
 	fmt.Println(string(out))
 }
 
+//跨域
 func httpCORS(w http.ResponseWriter, url string) {
 	w.Header().Set("Access-Control-Allow-Origin", url)
 	w.Header().Add("Access-Control-Allow-Headers", "Access-Token, Content-Type")
 	w.Header().Set("content-type", "application/json")
 }
 
+//http请求类型(暂时废弃: 在想要不要封装http.HandleFunc来实现)
 func httpMethod(r *http.Request, method string)  {
 	if r.Method != method {
 		return
 	}
 }
 
-
+//错误判断
 func checkError(e error) {
 	if e != nil {
 		fmt.Println(e)
