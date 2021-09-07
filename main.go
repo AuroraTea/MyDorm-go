@@ -6,21 +6,24 @@ import (
 	"net"
 	"net/http"
 	"os/exec"
+	"reflect"
 	"strconv"
 	"time"
 )
 
 func main() {
+	go checkIP()
+
 	http.HandleFunc("/test", postTest)
 	http.HandleFunc("/off-net", disableNetAdpt)
 
-	http.HandleFunc("/get-ip", checkIP)
+	http.HandleFunc("/get-ip", updateIP)
 
 	err := http.ListenAndServe(":5222", nil)
 	checkError(err)
 }
 
-func checkIP(w http.ResponseWriter, r *http.Request) {
+func updateIP(w http.ResponseWriter, r *http.Request) {
 	httpCORS(w, "*")
 	if r.Method == "GET" {
 		newIP,err := getLocalIPv4s()
@@ -59,6 +62,22 @@ func disableNetAdpt(w http.ResponseWriter, r *http.Request) {
 		checkError(err)
 
 		switchNetAdpt(interval, params["adptName"])
+	}
+}
+
+func checkIP()  {
+	t := time.NewTicker(2 * time.Second)
+	defer t.Stop()
+	currentIP,err := getLocalIPv4s()
+	checkError(err)
+	for {
+		<- t.C
+		fmt.Println("Ticker running...")
+		newIP,err := getLocalIPv4s()
+		checkError(err)
+		if !reflect.DeepEqual(newIP, currentIP){
+			currentIP = newIP
+		}
 	}
 }
 
