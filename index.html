@@ -19,9 +19,8 @@
     const adptName = input[0].value;
     const interval = input[1].value;
     // axios.get('http://100.83.138.239:5222/off-net', {
-      axios.post('http://127.0.0.1:5222/test', {
-        adptName: adptName,
-        interval: interval
+      axios.get('http://127.0.0.1:5222/get-ip', {
+
     })
     .then(function (response) {
       console.log(response);

@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"net"
 	"net/http"
 	"os/exec"
 	"strconv"
@@ -13,8 +14,25 @@ func main() {
 	http.HandleFunc("/test", postTest)
 	http.HandleFunc("/off-net", disableNetAdpt)
 
+	http.HandleFunc("/get-ip", checkIP)
+
 	err := http.ListenAndServe(":5222", nil)
 	checkError(err)
+}
+
+func checkIP(w http.ResponseWriter, r *http.Request) {
+	httpCORS(w, "*")
+	if r.Method == "GET" {
+		newIP,err := getLocalIPv4s()
+		checkError(err)
+
+		newIPString := ""
+		for _,str := range newIP {
+			newIPString += str+"\n"
+		}
+
+		fmt.Fprintf(w, newIPString)
+	}
 }
 
 func postTest(w http.ResponseWriter, r *http.Request) {
@@ -42,6 +60,22 @@ func disableNetAdpt(w http.ResponseWriter, r *http.Request) {
 
 		switchNetAdpt(interval, params["adptName"])
 	}
+}
+
+func getLocalIPv4s() ([]string, error) {
+	var ips []string
+	addrs, err := net.InterfaceAddrs()
+	if err != nil {
+		return ips, err
+	}
+
+	for _, a := range addrs {
+		if ipnet, ok := a.(*net.IPNet); ok && !ipnet.IP.IsLoopback() && ipnet.IP.To4() != nil {
+			ips = append(ips, ipnet.IP.String())
+		}
+	}
+
+	return ips, nil
 }
 
 func switchNetAdpt(interval int, adptName string) {
