@@ -33,6 +33,9 @@ func main() {
 //		newIPString := ""
 //		for _,str := range newIP {
 //			newIPString += str+"\n"
+//golang的字符串使用运算符相加开销很大, 何况是遍历一遍
+//不过反正不是自己的电脑?
+//到底要不要注意一点呢.
 //		}
 //
 //		fmt.Fprintf(w, newIPString)
