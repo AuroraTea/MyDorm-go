@@ -17,24 +17,33 @@ func main() {
 	http.HandleFunc("/test", postTest)
 	http.HandleFunc("/off-net", disableNetAdpt)
 
-	http.HandleFunc("/get-ip", updateIP)
+	//http.HandleFunc("/get-ip", updateIP)
+	http.HandleFunc("/get-ip", selectNetAdptName)
 
 	err := http.ListenAndServe(":5222", nil)
 	checkError(err)
 }
 
-func updateIP(w http.ResponseWriter, r *http.Request) {
+//func updateIP(w http.ResponseWriter, r *http.Request) {
+//	httpCORS(w, "*")
+//	if r.Method == "GET" {
+//		newIP,err := getLocalIPv4s()
+//		checkError(err)
+//
+//		newIPString := ""
+//		for _,str := range newIP {
+//			newIPString += str+"\n"
+//		}
+//
+//		fmt.Fprintf(w, newIPString)
+//	}
+//}
+
+func selectNetAdptName(w http.ResponseWriter, r *http.Request) {
 	httpCORS(w, "*")
 	if r.Method == "GET" {
-		newIP,err := getLocalIPv4s()
-		checkError(err)
-
-		newIPString := ""
-		for _,str := range newIP {
-			newIPString += str+"\n"
-		}
-
-		fmt.Fprintf(w, newIPString)
+		out := getNetAdptName()
+		fmt.Fprintf(w, out)
 	}
 }
 
@@ -107,10 +116,12 @@ func switchNetAdpt(interval int, adptName string) {
 }
 
 //获取网卡名称和本地ip
-func getNetAdpt()  {
+func getNetAdptName() string {
 	out, err := exec.Command("netsh", "interface", "show", "interface").Output()
 	checkError(err)
-	fmt.Println(string(out))
+	adptName, err := GbkToUtf8(out)
+	checkError(err)
+	return string(adptName)
 }
 
 //跨域
@@ -133,3 +144,4 @@ func checkError(e error) {
 		fmt.Println(e)
 	}
 }
+

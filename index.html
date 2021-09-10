@@ -10,11 +10,13 @@
   <input type="text" id="adptName" placeholder="网卡名称">
   <input type="text" id="interval" placeholder="禁用时长">秒
   <button>啦啦啦</button>
+  <p></p>
 
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
   const btn = document.querySelectorAll('button');
   const input = document.querySelectorAll('input');
+  const p = document.querySelectorAll('p');
   btn[0].onclick = function(){
     const adptName = input[0].value;
     const interval = input[1].value;
@@ -24,6 +26,8 @@
     })
     .then(function (response) {
       console.log(response);
+      input[0].value = response.data;
+      
     })
     .catch(function (error) {
       console.log(error);
