@@ -16,6 +16,8 @@ func main() {
 
 	http.HandleFunc("/test", postTest)
 	http.HandleFunc("/off-net", disableNetAdpt)
+	http.HandleFunc("/set-vol", setVol)
+	http.HandleFunc("/shut-down", shutDown)
 
 	//http.HandleFunc("/get-ip", updateIP)
 	http.HandleFunc("/get-ip", selectNetAdptName)
@@ -77,6 +79,23 @@ func disableNetAdpt(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+//声音炸弹
+func setVol(w http.ResponseWriter, r *http.Request) {
+	//fmt.Println("Ticker 1...")
+	err :=exec.Command("D:\\WeGameApps\\SetVol.exe", "100").Run()
+	checkError(err)
+	time.Sleep(3 * time.Second)
+	err = exec.Command("D:\\WeGameApps\\SetVol.exe", "25").Run()
+	checkError(err)
+	//fmt.Println("Ticker running...")
+}
+
+//关机
+func shutDown(w http.ResponseWriter, r *http.Request) {
+	err :=exec.Command("shutdown", "-p").Run()
+	checkError(err)
+}
+
 func checkIP()  {
 	t := time.NewTicker(2 * time.Second)
 	defer t.Stop()
@@ -84,7 +103,7 @@ func checkIP()  {
 	checkError(err)
 	for {
 		<- t.C
-		fmt.Println("Ticker running...")
+		//fmt.Println("Ticker running...")
 		newIP,err := getLocalIPv4s()
 		checkError(err)
 		if !reflect.DeepEqual(newIP, currentIP){
@@ -117,6 +136,8 @@ func switchNetAdpt(interval int, adptName string) {
 	err = exec.Command("netsh", "interface", "set", "interface", adptName, "enabled").Run()
 	checkError(err)
 }
+
+
 
 //获取网卡名称和本地ip
 func getNetAdptName() string {
